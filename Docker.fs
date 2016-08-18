@@ -106,7 +106,7 @@ let dockerRun exposePort image =
 
 let dockerGetHostPort exposedPort inst =
   let path = sprintf """{{(index (index .NetworkSettings.Ports "%i/tcp") 0).HostPort}}""" internalPort
-  inst, path
+  (inst, path)
   |> Inspect
   |> dockerAsk
   |> readFirstLine
