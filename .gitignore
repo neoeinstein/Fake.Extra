@@ -1,0 +1,26 @@
+bin/
+obj/
+target/
+output/
+reports/
+nuget-packages/
+packages/
+paket-files/
+.vs/
+.fake/
+
+*.suo
+*.user
+
+_Resharper*
+Working Copy*
+~*
+*.Cache
+*.log
+*.g.*
+*.ncrunch*
+
+.paket/paket.exe
+promote.cmd
+
+*.db
