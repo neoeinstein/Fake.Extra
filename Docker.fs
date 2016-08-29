@@ -17,7 +17,7 @@ type DockerInstance = DockerInstance of string
 
 type DockerCommand =
   | Build of DockerImageName * root:string * dockerfile:string option
-  | Run of DockerImageName * exposePort:uint16
+  | Run of DockerImageName * exposePort:uint16 * volumes:(string * string) list
   | Inspect of DockerInstance * path:string
   | Stop of DockerInstance
   | Remove of DockerInstance
@@ -31,7 +31,7 @@ type DockerCommand =
 module DockerCommand =
   let toArgs = function
     | Build (i,r,d) -> sprintf "build --pull -t %O %s %s" i (defaultArg (Option.map ((+) "-f ") d) "") r
-    | Run (i,p) -> sprintf "run -d -p %i %O" p i
+    | Run (i,p,vols) -> sprintf "run -d -p %i %s %O" p  (List.map (fun (l,r) -> sprintf "-v %s:%s" l r) vols |> String.concat " ") i
     | Inspect (DockerInstance i,p) -> sprintf "inspect -f '%s' %s" p i
     | Stop (DockerInstance i) -> sprintf "stop %s" i
     | Remove (DockerInstance i) -> sprintf "rm -f %s" i
@@ -43,7 +43,7 @@ module DockerCommand =
 
   let describe = function
     | Build (i,r,d) -> sprintf "Building container image: %O from context \"%s\" using %s" i r (defaultArg d "the Dockerfile in that directory")
-    | Run (i,_) -> sprintf "Runing container: %O" i
+    | Run (i,_,_) -> sprintf "Runing container: %O" i
     | Inspect (i,p) -> sprintf "Inspecting container metadata (%A: '%s')" i p
     | Stop i -> sprintf "Stoping container instance: %A" i
     | Remove i -> sprintf "Removing container instance: %A" i
