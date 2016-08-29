@@ -16,7 +16,7 @@ type DockerImageName =
 type DockerInstance = DockerInstance of string
 
 type DockerCommand =
-  | Build of DockerImageName
+  | Build of DockerImageName * root:string * dockerfile:string option
   | Run of DockerImageName * exposePort:uint16
   | Inspect of DockerInstance * path:string
   | Stop of DockerInstance
@@ -30,7 +30,7 @@ type DockerCommand =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module DockerCommand =
   let toArgs = function
-    | Build i -> sprintf "build --pull -t %O ." i
+    | Build (i,r,d) -> sprintf "build --pull -t %O %s %s" i (defaultArg (Option.map ((+) "-f ") d) "") r
     | Run (i,p) -> sprintf "run -d -p %i %O" p i
     | Inspect (DockerInstance i,p) -> sprintf "inspect -f '%s' %s" p i
     | Stop (DockerInstance i) -> sprintf "stop %s" i
@@ -42,7 +42,7 @@ module DockerCommand =
     | Logout h -> sprintf "logout %s" h
 
   let describe = function
-    | Build i -> sprintf "Building container image: %O" i
+    | Build (i,r,d) -> sprintf "Building container image: %O from context \"%s\"  %s" i r (defaultArg d "the Dockerfile in that directory")
     | Run (i,_) -> sprintf "Runing container: %O" i
     | Inspect (i,p) -> sprintf "Inspecting container metadata (%A: '%s')" i p
     | Stop i -> sprintf "Stoping container instance: %A" i
