@@ -97,8 +97,8 @@ let dockerAsk command =
 let readFirstLine (result : ProcessResult) =
   result.Messages |> Seq.head
 
-let dockerRun exposePort image =
-  (image, exposePort)
+let dockerRun exposePort image volumes =
+  (image, exposePort, volumes)
   |> Run
   |> dockerAsk
   |> readFirstLine
