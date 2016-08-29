@@ -42,7 +42,7 @@ module DockerCommand =
     | Logout h -> sprintf "logout %s" h
 
   let describe = function
-    | Build (i,r,d) -> sprintf "Building container image: %O from context \"%s\"  %s" i r (defaultArg d "the Dockerfile in that directory")
+    | Build (i,r,d) -> sprintf "Building container image: %O from context \"%s\" using %s" i r (defaultArg d "the Dockerfile in that directory")
     | Run (i,_) -> sprintf "Runing container: %O" i
     | Inspect (i,p) -> sprintf "Inspecting container metadata (%A: '%s')" i p
     | Stop i -> sprintf "Stoping container instance: %A" i
