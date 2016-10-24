@@ -26,6 +26,7 @@ type DockerCommand =
   | Push of DockerImageName
   | Login of host:string * username:string * password:string
   | Logout of host:string
+  | CustomExec of cmd:string
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module DockerCommand =
@@ -40,6 +41,7 @@ module DockerCommand =
     | Push i -> sprintf "push %O" i
     | Login (h,u,p) -> sprintf "login %s -u %s -p %s" h u p
     | Logout h -> sprintf "logout %s" h
+    | CustomExec cmd -> cmd
 
   let describe = function
     | Build (i,r,d) -> sprintf "Building container image: %O from context \"%s\" using %s" i r (defaultArg d "the Dockerfile in that directory")
@@ -52,6 +54,7 @@ module DockerCommand =
     | Push i -> sprintf "Pushing container image: %O" i
     | Login (h,u,p) -> sprintf "Setting docker credentials for %s@%s" u h
     | Logout h -> sprintf "Removing docker credentials on %s" h
+    | CustomExec cmd -> sprintf "Executing %s" cmd
 
   let private timeoutMins = float >> System.TimeSpan.FromMinutes
   let private timeoutSecs = float >> System.TimeSpan.FromMinutes
@@ -67,6 +70,7 @@ module DockerCommand =
     | Push _ -> timeoutMins 15
     | Login _ -> timeoutSecs 15
     | Logout _ -> timeoutSecs 15
+    | CustomExec _ -> timeoutMins 15
 
 let docker (exec : (System.Diagnostics.ProcessStartInfo -> unit) -> System.TimeSpan -> 'a) (handler : 'a -> 'b) command =
   printfn "%s" <| DockerCommand.describe command
