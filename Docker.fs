@@ -5,13 +5,14 @@ open Fake
 type DockerImageName =
   { Host : string option
     Repository : string
-    Name : string
+    Name : string option
     Tag : string option
   }
   override x.ToString () =
     let h = defaultArg (x.Host |> Option.map (fun h -> h + "/")) ""
     let t = defaultArg (x.Tag |> Option.map (fun t -> ":" + t)) ""
-    sprintf "%s%s/%s%s" h x.Repository x.Name t
+    let n = defaultArg (x.Name |> Option.map (fun n -> "/" + n)) ""
+    sprintf "%s%s%s%s" h x.Repository n t
 
 type DockerInstance = DockerInstance of string
 
