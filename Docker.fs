@@ -122,6 +122,21 @@ let dockerGetIpAddress inst =
   |> dockerAsk
   |> readFirstLine
 
+let getVersion() =
+  "--version"
+  |> CustomExec
+  |> dockerAsk
+  |> fun x -> x.Messages
+  |> separated ""
+
+let isInstalled() =
+  try
+      let result = "--version"
+                    |> CustomExec
+                    |> dockerAsk
+      result.OK
+  with _ -> false
+
 let dockerTagPushRm image tag =
   dockerDo (Tag (image, tag))
   try
