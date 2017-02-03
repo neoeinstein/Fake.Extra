@@ -115,6 +115,13 @@ let dockerGetHostPort (exposedPort : uint16) inst =
   |> readFirstLine
   |> System.UInt16.Parse
 
+let dockerGetIpAddress inst =
+  let path = "'{{.NetworkSettings.IPAddress}}'"
+  (inst, path)
+  |> Inspect
+  |> dockerAsk
+  |> readFirstLine
+
 let dockerTagPushRm image tag =
   dockerDo (Tag (image, tag))
   try
