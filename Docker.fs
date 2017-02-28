@@ -115,6 +115,28 @@ let dockerGetHostPort (exposedPort : uint16) inst =
   |> readFirstLine
   |> System.UInt16.Parse
 
+let dockerGetIpAddress inst =
+  let path = "'{{.NetworkSettings.IPAddress}}'"
+  (inst, path)
+  |> Inspect
+  |> dockerAsk
+  |> readFirstLine
+
+let getVersion() =
+  "--version"
+  |> CustomExec
+  |> dockerAsk
+  |> fun x -> x.Messages
+  |> separated ""
+
+let isInstalled() =
+  try
+      let result = "--version"
+                    |> CustomExec
+                    |> dockerAsk
+      result.OK
+  with _ -> false
+
 let dockerTagPushRm image tag =
   dockerDo (Tag (image, tag))
   try
